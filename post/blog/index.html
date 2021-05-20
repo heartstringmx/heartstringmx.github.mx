@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>RestTemplate概述 | My New Hugo Site</title>
+
+    
+
+
+
+<meta name="author" content="" />
+<meta name="description" content="" />
+
+
+
+<meta name="generator" content="Hugo 0.83.1" />
+
+<link rel="canonical" href="https://heartstringmx.github.mx/post/blog/" />
+
+
+<meta property="og:title" content="RestTemplate概述" />
+<meta property="og:description" content="RestTemplate概述 Spring 官网对它的介绍如下
+ The original Spring REST client with a synchronous, template method API.
+ RestTemplate 是一个同步的 Rest API 客户端。下面我们就来介绍下 RestTemplate 的常用功能。
+RestTemplate中的方法大致可以分为三组
+ getForObject &mdash; optionsForAllow 分为一组，这类方法是常规的 Rest API（GET、POST、DELETE 等）方法调用； exchange：接收一个 RequestEntity 参数，可以自己设置 HTTP method，URL，headers 和 body，返回 ResponseEntity； execute：通过 callback 接口，可以对请求和返回做更加全面的自定义控制。   一般情况下，我们使用第一组和第二组方法就够了。
+ 普通接口调用 RestTemplate 会根据 params 的具体类型，调用合适的 HttpMessageConvert 将请求参数写到请求体 body 中，并在请求头中添加合适的 content-type 也会根据 responseType 的类型（本列子中是 JSONObject），设置 head 中的 accept 字段，当响应返回的时候再调用合适的 HttpMessageConvert 进行响应转换
+// 通过 GET 方式调用，返回一个 String 值，还可以给 URL 变量设置值（也可通过 uriTemplateHandler 这个属性自定义） Map&lt;String, String&gt; vars = Collections." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://heartstringmx.github.mx/post/blog/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-05-21T00:02:17&#43;08:00" />
+<meta property="article:modified_time" content="2021-05-21T00:02:17&#43;08:00" />
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="RestTemplate概述"/>
+<meta name="twitter:description" content="RestTemplate概述 Spring 官网对它的介绍如下
+ The original Spring REST client with a synchronous, template method API.
+ RestTemplate 是一个同步的 Rest API 客户端。下面我们就来介绍下 RestTemplate 的常用功能。
+RestTemplate中的方法大致可以分为三组
+ getForObject &mdash; optionsForAllow 分为一组，这类方法是常规的 Rest API（GET、POST、DELETE 等）方法调用； exchange：接收一个 RequestEntity 参数，可以自己设置 HTTP method，URL，headers 和 body，返回 ResponseEntity； execute：通过 callback 接口，可以对请求和返回做更加全面的自定义控制。   一般情况下，我们使用第一组和第二组方法就够了。
+ 普通接口调用 RestTemplate 会根据 params 的具体类型，调用合适的 HttpMessageConvert 将请求参数写到请求体 body 中，并在请求头中添加合适的 content-type 也会根据 responseType 的类型（本列子中是 JSONObject），设置 head 中的 accept 字段，当响应返回的时候再调用合适的 HttpMessageConvert 进行响应转换
+// 通过 GET 方式调用，返回一个 String 值，还可以给 URL 变量设置值（也可通过 uriTemplateHandler 这个属性自定义） Map&lt;String, String&gt; vars = Collections."/>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<link rel="stylesheet" href="/css/icomoon.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/css/OverlayScrollbars.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css">
+<link rel="stylesheet" href="/css/site.css" />
+
+<style>
+  .ui.header a:not(.ui.button):hover {
+    text-decoration: underline;
+  }
+
+  
+
+  
+
+  
+
+  
+</style>
+
+
+    
+
+
+
+
+
+
+
+    
+  </head>
+
+  <body class="default">
+    
+<nav class="ui secondary menu dream-menu">
+
+  <div class="item">
+    <i class="large link bullseye icon dream-flip-toggle" title="Flip it!"></i>
+  </div>
+  <div class="item">
+    <i class="large link home icon" title="Home" onclick="window.location.href = 'https:\/\/heartstringmx.github.mx\/'"></i>
+  </div>
+  
+  
+</nav>
+
+    <div class="flip-container">
+      <div class="flipper">
+        <section class="front">
+          <div class="dream-max-width">
+            
+<div class="ui relaxed centered grid dream-grid dream-grid-single">
+  
+  
+  
+  
+
+  
+  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
+  
+    
+    <div class="ui segment toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#普通接口调用">普通接口调用</a></li>
+    <li><a href="#自定义header">自定义Header</a></li>
+    <li><a href="#文件下载">文件下载</a></li>
+    <li><a href="#文件上传">文件上传</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#核心依赖">核心依赖</a></li>
+    <li><a href="#核心配置">核心配置</a></li>
+    <li><a href="#封装实体类">封装实体类</a></li>
+    <li><a href="#配置resttemplate">配置RestTemplate</a></li>
+    <li><a href="#爬虫核心代码">爬虫核心代码</a></li>
+    <li><a href="#测试运行">测试运行</a></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    
+  
+  </aside>
+  
+  <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
+    <section class="ui top attached segment">
+      <header>
+        <h1 class="ui large header">RestTemplate概述<span class="sub header">
+            <span class="left">
+              @
+              
+                
+              
+
+              | 
+                  
+                    Friday, May 21, 2021
+                  
+                
+
+              | 6 minutes read
+
+              
+              | Update at
+                
+                  
+                    Friday, May 21, 2021
+                  
+                
+              
+            </span>
+
+            
+            <span class="dream-share">
+  <a href="#" class="save-as-image" title="Save as image" onclick="savePostAsImg()">
+    <i class="save icon"></i>
+  </a>
+  <a href="https://twitter.com/intent/tweet?text=RestTemplate%e6%a6%82%e8%bf%b0&url=https%3a%2f%2fheartstringmx.github.mx%2fpost%2fblog%2f" title="Twitter">
+    <i class="twitter icon"></i>
+  </a>
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fheartstringmx.github.mx%2fpost%2fblog%2f" title="Facebook">
+    <i class="facebook icon"></i>
+  </a>
+</span>
+
+            
+          </span>
+        </h1>
+      </header>
+
+      <article class="main">
+        
+
+        <!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h1 id="resttemplate概述">RestTemplate概述</h1>
+<p>Spring 官网对它的介绍如下</p>
+<blockquote>
+<p>The original Spring REST client with a synchronous, template method API.</p>
+</blockquote>
+<p>RestTemplate 是一个同步的 Rest API 客户端。下面我们就来介绍下 RestTemplate 的常用功能。</p>
+<p>RestTemplate中的方法大致可以分为三组</p>
+<ul>
+<li>getForObject &mdash; optionsForAllow 分为一组，这类方法是常规的 Rest API（GET、POST、DELETE 等）方法调用；</li>
+<li>exchange：接收一个 RequestEntity 参数，可以自己设置 HTTP method，URL，headers 和 body，返回 ResponseEntity；</li>
+<li>execute：通过 callback 接口，可以对请求和返回做更加全面的自定义控制。</li>
+</ul>
+<blockquote>
+<p>一般情况下，我们使用第一组和第二组方法就够了。</p>
+</blockquote>
+<p><img src="E:/2021%25E4%25B8%25AD%25E5%2585%25AC%25E6%2595%2599%25E8%2582%25B2%25E7%2594%25B3%25E8%2588%25AA%25E8%2580%2581%25E5%25B8%2588java%25E8%25B5%2584%25E6%2596%2599/%25E7%25AC%2594%25E8%25AE%25B0/%25E7%2596%25AB%25E6%2583%2585%25E9%2598%25B2%25E6%258E%25A7%25E6%258C%2587%25E6%258C%25A5%25E5%25B9%25B3%25E5%258F%25B0/%25E7%2596%25AB%25E6%2583%2585%25E9%2598%25B2%25E6%258E%25A7%25E6%258C%2587%25E6%258C%25A5%25E5%25B9%25B3%25E5%258F%25B0/imgs/20201117091138874_21789.png" alt=""></p>
+<h2 id="普通接口调用">普通接口调用</h2>
+<p>RestTemplate 会根据 params 的具体类型，调用合适的 HttpMessageConvert 将请求参数写到请求体 body 中，并在请求头中添加合适的 content-type
+也会根据 responseType 的类型（本列子中是 JSONObject），设置 head 中的 accept 字段，当响应返回的时候再调用合适的 HttpMessageConvert 进行响应转换</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 通过 GET 方式调用，返回一个 String 值，还可以给 URL 变量设置值（也可通过 uriTemplateHandler 这个属性自定义）
+</span><span style="color:#75715e"></span>Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> vars <span style="color:#f92672">=</span> Collections<span style="color:#f92672">.</span><span style="color:#a6e22e">singletonMap</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hotel&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;42&#34;</span><span style="color:#f92672">);</span>
+String result <span style="color:#f92672">=</span> restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">getForObject</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;https://example.com/hotels/{hotel}/rooms/{hotel}&#34;</span><span style="color:#f92672">,</span> String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> vars<span style="color:#f92672">);</span>
+
+<span style="color:#75715e">//响应JSON
+</span><span style="color:#75715e"></span>String url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://127.0.0.1:8080/hello&#34;</span><span style="color:#f92672">;</span>
+JSONObject param <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> JSONObject<span style="color:#f92672">();</span>
+ResponseEntity<span style="color:#f92672">&lt;</span>JSONObject<span style="color:#f92672">&gt;</span> responseEntity<span style="color:#f92672">=</span>restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">postForEntity</span><span style="color:#f92672">(</span>url<span style="color:#f92672">,</span>params<span style="color:#f92672">,</span>JSONObject<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+<span style="color:#66d9ef">int</span> statusCodeValue <span style="color:#f92672">=</span> responseEntity<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatusCodeValue</span><span style="color:#f92672">();</span>
+HttpHeaders headers <span style="color:#f92672">=</span> responseEntity<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeaders</span><span style="color:#f92672">();</span>
+JSONObject body <span style="color:#f92672">=</span> responseEntity<span style="color:#f92672">.</span><span style="color:#a6e22e">getBody</span><span style="color:#f92672">();</span>
+</code></pre></div><h2 id="自定义header">自定义Header</h2>
+<p>有时候，我们需要在请求中的 Head 中添加值 传给服务端，那么上面这种调用形式就不太满足要求了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">RequestEntity<span style="color:#f92672">&lt;</span>JSONObject<span style="color:#f92672">&gt;</span> requestEntity <span style="color:#f92672">=</span> RequestEntity<span style="color:#f92672">.</span><span style="color:#a6e22e">post</span><span style="color:#f92672">(</span>uri<span style="color:#f92672">).</span>
+                <span style="color:#75715e">// 添加 header
+</span><span style="color:#75715e"></span>                header<span style="color:#f92672">((</span><span style="color:#e6db74">&#34;MyRequestHeader&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;MyValue&#34;</span><span style="color:#f92672">)</span>
+                accept<span style="color:#f92672">(</span>MediaType<span style="color:#f92672">.</span><span style="color:#a6e22e">APPLICATION_JSON</span><span style="color:#f92672">).</span>
+                contentType<span style="color:#f92672">(</span>MediaType<span style="color:#f92672">.</span><span style="color:#a6e22e">APPLICATION_JSON</span><span style="color:#f92672">).</span>
+                body<span style="color:#f92672">(</span>requestParam<span style="color:#f92672">);</span>
+ResponseEntity<span style="color:#f92672">&lt;</span>JSONObject<span style="color:#f92672">&gt;</span> responseEntity <span style="color:#f92672">=</span> restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">exchange</span><span style="color:#f92672">(</span>requestEntity<span style="color:#f92672">,</span>JSONObject<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+<span style="color:#75715e">// 响应结果
+</span><span style="color:#75715e"></span>JSONObject responseEntityBody <span style="color:#f92672">=</span> responseEntity<span style="color:#f92672">.</span><span style="color:#a6e22e">getBody</span><span style="color:#f92672">();</span>
+</code></pre></div><h2 id="文件下载">文件下载</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#a6e22e">@Test</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">contextLoads</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> bytes <span style="color:#f92672">=</span> template<span style="color:#f92672">.</span><span style="color:#a6e22e">getForObject</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1625113866,3058539295&amp;fm=26&amp;gp=0.jpg&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[].</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+
+            FileUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">writeByteArrayToFile</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> File<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;E:\\jd-imgs\\a.png&#34;</span> <span style="color:#f92672">),</span>bytes <span style="color:#f92672">);</span>
+
+    <span style="color:#f92672">}</span>
+</code></pre></div><h2 id="文件上传">文件上传</h2>
+<pre><code>     /**
+     * 文件也是资源的一种，我们上传时使用的字节，RestTemplate要求我们继承该类，并且重写方法
+     */
+    public class MyByteArrayResource extends ByteArrayResource {
+
+        private String fileName;
+
+        public MyByteArrayResource(byte[] byteArray, String fileName) {
+            super(byteArray);
+
+            this.fileName = fileName;
+
+        }
+
+        @Override
+        public String getFilename() {
+            return this.fileName;
+        }
+    }
+
+     //利用restTemplate上传图片
+     @Test
+    public void uploadFile(){
+        String imgServerUrl = &quot;http://localhost:8080/api/fileUpload&quot;;
+        //发送请求的数据格式,multipart/form-data
+        MultiValueMap&lt;String, Object&gt; parts = new LinkedMultiValueMap&lt;&gt;();
+        //加入请求参数中
+        parts.add(&quot;img&quot;,new MyByteArrayResource(FileUtils.readFileToByteArray(new File(&quot;E:\\jd-imgs\\a.png&quot;)),&quot;a.png&quot;));
+        template.postForLocation(imgServerUrl, parts);
+    }
+</code></pre><h1 id="疫情数据抓取">疫情数据抓取</h1>
+<p>本次疫情数据的来源为新浪，抓包工具为HTTPDebugger。主要接口有以下几个</p>
+<ul>
+<li>
+<p>全部数据（仅当日）: 精确到区县,同时包含国外的citycode：https://news.sina.com.cn/project/fymap/ncp2020_full_data.json</p>
+</li>
+<li>
+<p>单独地区:含历史数据：https://gwpre.sina.cn/interface/news/wap/historydata.d.json?province=hubei</p>
+</li>
+<li>
+<p>海外历史数据(不含中国)：https://gwpre.sina.cn/ncp/top_history?sortby=certain_inc</p>
+</li>
+<li>
+<p>海外疫情历史数据:citycode从<strong>全部数据</strong>中获取：https://gwpre.sina.cn/ncp/multi_history_get?citycode=SCIT0039</p>
+</li>
+</ul>
+<h2 id="核心依赖">核心依赖</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span style="color:#f92672">&lt;project</span> <span style="color:#a6e22e">xmlns=</span><span style="color:#e6db74">&#34;http://maven.apache.org/POM/4.0.0&#34;</span> <span style="color:#a6e22e">xmlns:xsi=</span><span style="color:#e6db74">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+         <span style="color:#a6e22e">xsi:schemaLocation=</span><span style="color:#e6db74">&#34;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;modelVersion&gt;</span>4.0.0<span style="color:#f92672">&lt;/modelVersion&gt;</span>
+    <span style="color:#f92672">&lt;parent&gt;</span>
+        <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+        <span style="color:#f92672">&lt;artifactId&gt;</span>spring-boot-starter-parent<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;version&gt;</span>2.4.0<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;relativePath/&gt;</span> <span style="color:#75715e">&lt;!-- lookup parent from repository --&gt;</span>
+    <span style="color:#f92672">&lt;/parent&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>com.offcn<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>epidemic-situation-reptiles<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>0.0.1-SNAPSHOT<span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;name&gt;</span>epidemic-situation-reptiles<span style="color:#f92672">&lt;/name&gt;</span>
+    <span style="color:#f92672">&lt;description&gt;</span>疫情数据和新闻数据爬取<span style="color:#f92672">&lt;/description&gt;</span>
+
+    <span style="color:#f92672">&lt;properties&gt;</span>
+        <span style="color:#f92672">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span style="color:#f92672">&lt;/project.build.sourceEncoding&gt;</span>
+        <span style="color:#f92672">&lt;maven.compiler.source&gt;</span>1.8<span style="color:#f92672">&lt;/maven.compiler.source&gt;</span>
+        <span style="color:#f92672">&lt;maven.compiler.target&gt;</span>1.8<span style="color:#f92672">&lt;/maven.compiler.target&gt;</span>
+        <span style="color:#75715e">&lt;!--JSON解析--&gt;</span>
+        <span style="color:#f92672">&lt;fastjson.version&gt;</span>1.2.22<span style="color:#f92672">&lt;/fastjson.version&gt;</span>
+        <span style="color:#75715e">&lt;!--HTML解析--&gt;</span>
+        <span style="color:#f92672">&lt;jsoup.version&gt;</span>1.10.3<span style="color:#f92672">&lt;/jsoup.version&gt;</span>
+        <span style="color:#75715e">&lt;!--工具包--&gt;</span>
+        <span style="color:#f92672">&lt;commons.lang3.version&gt;</span>3.7<span style="color:#f92672">&lt;/commons.lang3.version&gt;</span>
+        <span style="color:#f92672">&lt;commons.io.version&gt;</span>2.6<span style="color:#f92672">&lt;/commons.io.version&gt;</span>
+    <span style="color:#f92672">&lt;/properties&gt;</span>
+
+    <span style="color:#f92672">&lt;dependencies&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>spring-boot-configuration-processor<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;optional&gt;</span>true<span style="color:#f92672">&lt;/optional&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#75715e">&lt;!--省略get和set方法--&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.projectlombok<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>lombok<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#75715e">&lt;!--日志依赖--&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>ch.qos.logback<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>logback-classic<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>junit<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>junit<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;scope&gt;</span>test<span style="color:#f92672">&lt;/scope&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>spring-boot-starter-test<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;scope&gt;</span>test<span style="color:#f92672">&lt;/scope&gt;</span>
+            <span style="color:#f92672">&lt;exclusions&gt;</span>
+                <span style="color:#f92672">&lt;exclusion&gt;</span>
+                    <span style="color:#f92672">&lt;groupId&gt;</span>org.junit.vintage<span style="color:#f92672">&lt;/groupId&gt;</span>
+                    <span style="color:#f92672">&lt;artifactId&gt;</span>junit-vintage-engine<span style="color:#f92672">&lt;/artifactId&gt;</span>
+                <span style="color:#f92672">&lt;/exclusion&gt;</span>
+            <span style="color:#f92672">&lt;/exclusions&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>spring-boot-starter-web<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>com.alibaba<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>fastjson<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;version&gt;</span>${fastjson.version}<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.jsoup<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>jsoup<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;version&gt;</span>${jsoup.version}<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.apache.commons<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>commons-lang3<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;version&gt;</span>${commons.lang3.version}<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>commons-io<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>commons-io<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;version&gt;</span>${commons.io.version}<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+        <span style="color:#f92672">&lt;dependency&gt;</span>
+            <span style="color:#f92672">&lt;groupId&gt;</span>org.apache.httpcomponents<span style="color:#f92672">&lt;/groupId&gt;</span>
+            <span style="color:#f92672">&lt;artifactId&gt;</span>httpclient<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;/dependency&gt;</span>
+    <span style="color:#f92672">&lt;/dependencies&gt;</span>
+
+    <span style="color:#f92672">&lt;build&gt;</span>
+        <span style="color:#f92672">&lt;plugins&gt;</span>
+            <span style="color:#f92672">&lt;plugin&gt;</span>
+                <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+                <span style="color:#f92672">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+            <span style="color:#f92672">&lt;/plugin&gt;</span>
+        <span style="color:#f92672">&lt;/plugins&gt;</span>
+    <span style="color:#f92672">&lt;/build&gt;</span>
+
+<span style="color:#f92672">&lt;/project&gt;</span>
+
+
+</code></pre></div><h2 id="核心配置">核心配置</h2>
+<blockquote>
+<p>application.properties</p>
+</blockquote>
+<pre><code class="language-properties" data-lang="properties">server.port=10086
+
+# 国内疫情
+yiqing.gurl=https://voice.baidu.com/newpneumonia/get?target=trend&amp;isCaseIn=0&amp;stage=publish
+# 国外疫情
+yiqing.hurl=https://voice.baidu.com/newpneumonia/get?target=trend&amp;isCaseIn=1&amp;stage=publish
+
+</code></pre><blockquote>
+<p>读取配置文件</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.epidemicsituationreptiles.config<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> lombok.Data<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.boot.context.properties.ConfigurationProperties<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.stereotype.Component<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author 侯叶飞
+</span><span style="color:#75715e"> * @Date 2020-11-17:16:51
+</span><span style="color:#75715e"> * @Description url路径配置
+</span><span style="color:#75715e"> */</span>
+
+
+<span style="color:#a6e22e">@ConfigurationProperties</span><span style="color:#f92672">(</span>prefix <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;yiqing&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@Component</span>
+<span style="color:#a6e22e">@Data</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UrlConfig</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 国内疫情
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String gurl<span style="color:#f92672">;</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 国外疫情
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String hurl<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+</code></pre></div><blockquote>
+<p>启动类</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.epidemicsituationreptiles<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> org.springframework.boot.SpringApplication<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.boot.autoconfigure.SpringBootApplication<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.boot.context.properties.EnableConfigurationProperties<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.web.bind.annotation.RestController<span style="color:#f92672">;</span>
+
+<span style="color:#a6e22e">@SpringBootApplication</span>
+<span style="color:#a6e22e">@RestController</span>
+<span style="color:#a6e22e">@EnableConfigurationProperties</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">EpidemicSituationReptilesApplication</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        SpringApplication<span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">(</span>EpidemicSituationReptilesApplication<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> args<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+
+</code></pre></div><h2 id="封装实体类">封装实体类</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.epidemicsituationreptiles.domain<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> lombok.Data<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.io.Serializable<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.List<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author 侯叶飞
+</span><span style="color:#75715e"> * @Date 2020-11-17:16:35
+</span><span style="color:#75715e"> * @Description 数据对应的实体类
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Data</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">City</span> <span style="color:#66d9ef">implements</span> Serializable <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> String name<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> updateDate<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> list<span style="color:#f92672">;</span>
+
+
+<span style="color:#f92672">}</span>
+
+</code></pre></div><h2 id="配置resttemplate">配置RestTemplate</h2>
+<blockquote>
+<p>消息转换器</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.epidemicsituationreptiles.converters<span style="color:#f92672">;</span>
+
+
+
+<span style="color:#f92672">import</span> java.util.ArrayList<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.List<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> org.springframework.http.MediaType<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.http.converter.json.MappingJackson2HttpMessageConverter<span style="color:#f92672">;</span>
+
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author 侯叶飞
+</span><span style="color:#75715e"> * @Date 2020-11-17:17:15
+</span><span style="color:#75715e"> * @Description 自定义消息转换器
+</span><span style="color:#75715e"> */</span>
+
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AppMappingJackson2HttpMessageConverter</span> <span style="color:#66d9ef">extends</span> MappingJackson2HttpMessageConverter <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">AppMappingJackson2HttpMessageConverter</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        List<span style="color:#f92672">&lt;</span>MediaType<span style="color:#f92672">&gt;</span> mediaTypes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+        mediaTypes<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>MediaType<span style="color:#f92672">.</span><span style="color:#a6e22e">APPLICATION_OCTET_STREAM</span><span style="color:#f92672">);</span>
+        setSupportedMediaTypes<span style="color:#f92672">(</span>mediaTypes<span style="color:#f92672">);</span><span style="color:#75715e">// ta
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+</code></pre></div><blockquote>
+<p>拦截器</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.epidemicsituationreptiles.Interceptors<span style="color:#f92672">;</span>
+
+
+<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> org.springframework.http.HttpRequest<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.http.client.ClientHttpRequestExecution<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.http.client.ClientHttpRequestInterceptor<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.http.client.ClientHttpResponse<span style="color:#f92672">;</span>
+
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author 侯叶飞
+</span><span style="color:#75715e"> * @Date 2020-11-17:17:14
+</span><span style="color:#75715e"> * @Description 拦截器配置
+</span><span style="color:#75715e"> */</span>
+
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RequestHeaderInterceptor</span> <span style="color:#66d9ef">implements</span> ClientHttpRequestInterceptor <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> ClientHttpResponse <span style="color:#a6e22e">intercept</span><span style="color:#f92672">(</span>HttpRequest request<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> body<span style="color:#f92672">,</span> ClientHttpRequestExecution execution<span style="color:#f92672">)</span>
+            <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> execution<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span>request<span style="color:#f92672">,</span> body<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+
+</code></pre></div><blockquote>
+<p>核心配置</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.epidemicsituationreptiles.config<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> com.offcn.epidemicsituationreptiles.Interceptors.RequestHeaderInterceptor<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.offcn.epidemicsituationreptiles.converters.AppMappingJackson2HttpMessageConverter<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.client.HttpClient<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.client.config.RequestConfig<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.config.Registry<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.config.RegistryBuilder<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.conn.socket.ConnectionSocketFactory<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.conn.socket.PlainConnectionSocketFactory<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.conn.ssl.NoopHostnameVerifier<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.conn.ssl.SSLConnectionSocketFactory<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.impl.client.CloseableHttpClient<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.impl.client.HttpClientBuilder<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.impl.client.HttpClients<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.impl.client.LaxRedirectStrategy<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.impl.conn.PoolingHttpClientConnectionManager<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.ssl.SSLContextBuilder<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.http.ssl.TrustStrategy<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.context.annotation.Bean<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.context.annotation.Configuration<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.http.client.ClientHttpRequestFactory<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.http.client.ClientHttpRequestInterceptor<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.http.client.HttpComponentsClientHttpRequestFactory<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.web.client.RestTemplate<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.security.KeyManagementException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.security.KeyStoreException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.security.NoSuchAlgorithmException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.security.cert.CertificateException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.security.cert.X509Certificate<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.ArrayList<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.List<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author 侯叶飞
+</span><span style="color:#75715e"> * @Date 2020-11-17:8:57
+</span><span style="color:#75715e"> * @Description SpringBoot自定义配置类
+</span><span style="color:#75715e"> */</span>
+
+<span style="color:#a6e22e">@Configuration</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BeanConfig</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">/*
+</span><span style="color:#75715e">     * 通过SSLContextBuilder绕过https安全验证，参数自动注入
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#a6e22e">@Bean</span>
+    <span style="color:#66d9ef">public</span> RestTemplate <span style="color:#a6e22e">bairongRestTemplate</span><span style="color:#f92672">(</span>List<span style="color:#f92672">&lt;</span>RequestHeaderInterceptor<span style="color:#f92672">&gt;</span> interceptors<span style="color:#f92672">)</span>
+            <span style="color:#66d9ef">throws</span> KeyStoreException<span style="color:#f92672">,</span> NoSuchAlgorithmException<span style="color:#f92672">,</span> KeyManagementException <span style="color:#f92672">{</span>
+        HttpComponentsClientHttpRequestFactory factory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HttpComponentsClientHttpRequestFactory<span style="color:#f92672">();</span>
+        <span style="color:#75715e">// factory.setConnectionRequestTimeout(requestTimeout);
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// factory.setConnectTimeout(connectTimeout);
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// factory.setReadTimeout(readTimeout);
+</span><span style="color:#75715e"></span>
+        <span style="color:#75715e">// https相关配置
+</span><span style="color:#75715e"></span>        SSLContextBuilder builder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SSLContextBuilder<span style="color:#f92672">();</span>
+        TrustStrategy trustStrategy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TrustStrategy<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isTrusted</span><span style="color:#f92672">(</span>X509Certificate<span style="color:#f92672">[]</span> x509Certificates<span style="color:#f92672">,</span> String s<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> CertificateException <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">};</span>
+        builder<span style="color:#f92672">.</span><span style="color:#a6e22e">loadTrustMaterial</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">,</span>trustStrategy<span style="color:#f92672">);</span>
+
+        SSLConnectionSocketFactory socketFactory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SSLConnectionSocketFactory<span style="color:#f92672">(</span>builder<span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">(),</span>
+                <span style="color:#66d9ef">new</span> String<span style="color:#f92672">[]</span> <span style="color:#f92672">{</span> <span style="color:#e6db74">&#34;SSLv2Hello&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;SSLv3&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;TLSv1&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;TLSv1.2&#34;</span> <span style="color:#f92672">},</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">,</span> NoopHostnameVerifier<span style="color:#f92672">.</span><span style="color:#a6e22e">INSTANCE</span><span style="color:#f92672">);</span>
+        Registry<span style="color:#f92672">&lt;</span>ConnectionSocketFactory<span style="color:#f92672">&gt;</span> registry <span style="color:#f92672">=</span> RegistryBuilder<span style="color:#f92672">.&lt;</span>ConnectionSocketFactory<span style="color:#f92672">&gt;</span>create<span style="color:#f92672">()</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> PlainConnectionSocketFactory<span style="color:#f92672">()).</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;https&#34;</span><span style="color:#f92672">,</span> socketFactory<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+        PoolingHttpClientConnectionManager phccm <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PoolingHttpClientConnectionManager<span style="color:#f92672">(</span>registry<span style="color:#f92672">);</span>
+        phccm<span style="color:#f92672">.</span><span style="color:#a6e22e">setMaxTotal</span><span style="color:#f92672">(</span>200<span style="color:#f92672">);</span>
+
+        CloseableHttpClient httpClient <span style="color:#f92672">=</span> HttpClients<span style="color:#f92672">.</span><span style="color:#a6e22e">custom</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setSSLSocketFactory</span><span style="color:#f92672">(</span>socketFactory<span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">setConnectionManager</span><span style="color:#f92672">(</span>phccm<span style="color:#f92672">).</span><span style="color:#a6e22e">setConnectionManagerShared</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+        factory<span style="color:#f92672">.</span><span style="color:#a6e22e">setHttpClient</span><span style="color:#f92672">(</span>httpClient<span style="color:#f92672">);</span>
+
+        RestTemplate restTemplate <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> RestTemplate<span style="color:#f92672">(</span>factory<span style="color:#f92672">);</span>
+        List<span style="color:#f92672">&lt;</span>ClientHttpRequestInterceptor<span style="color:#f92672">&gt;</span> clientInterceptorList <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>RequestHeaderInterceptor i <span style="color:#f92672">:</span> interceptors<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            ClientHttpRequestInterceptor interceptor <span style="color:#f92672">=</span> i<span style="color:#f92672">;</span>
+            clientInterceptorList<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>interceptor<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+        restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">setInterceptors</span><span style="color:#f92672">(</span>clientInterceptorList<span style="color:#f92672">);</span>
+
+        restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessageConverters</span><span style="color:#f92672">().</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AppMappingJackson2HttpMessageConverter<span style="color:#f92672">());</span>
+        <span style="color:#66d9ef">return</span> restTemplate<span style="color:#f92672">;</span>
+
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 配置拦截器
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#a6e22e">@Bean</span>
+    <span style="color:#66d9ef">public</span> RequestHeaderInterceptor <span style="color:#a6e22e">requestHeaderInterceptor</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> RequestHeaderInterceptor<span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 构造工厂
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#a6e22e">@Bean</span>
+    <span style="color:#66d9ef">public</span> ClientHttpRequestFactory <span style="color:#a6e22e">appClientHttpRequestFactory</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> HttpComponentsClientHttpRequestFactory<span style="color:#f92672">(</span>httpclient<span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 配置 HttpClient
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#a6e22e">@Bean</span>
+    <span style="color:#66d9ef">public</span> HttpClient <span style="color:#a6e22e">httpclient</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        Registry<span style="color:#f92672">&lt;</span>ConnectionSocketFactory<span style="color:#f92672">&gt;</span> registry <span style="color:#f92672">=</span> RegistryBuilder<span style="color:#f92672">.&lt;</span>ConnectionSocketFactory<span style="color:#f92672">&gt;</span>create<span style="color:#f92672">()</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http&#34;</span><span style="color:#f92672">,</span> PlainConnectionSocketFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getSocketFactory</span><span style="color:#f92672">())</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;https&#34;</span><span style="color:#f92672">,</span> SSLConnectionSocketFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getSocketFactory</span><span style="color:#f92672">()).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+        PoolingHttpClientConnectionManager connectionManager <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PoolingHttpClientConnectionManager<span style="color:#f92672">(</span>registry<span style="color:#f92672">);</span>
+        connectionManager<span style="color:#f92672">.</span><span style="color:#a6e22e">setMaxTotal</span><span style="color:#f92672">(</span>100<span style="color:#f92672">);</span><span style="color:#75715e">// 请求最大连接 TODO
+</span><span style="color:#75715e"></span>        connectionManager<span style="color:#f92672">.</span><span style="color:#a6e22e">setDefaultMaxPerRoute</span><span style="color:#f92672">(</span>100<span style="color:#f92672">);</span>
+        RequestConfig requestConfig <span style="color:#f92672">=</span> RequestConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">custom</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setSocketTimeout</span><span style="color:#f92672">(</span>1000 <span style="color:#f92672">*</span> 60<span style="color:#f92672">).</span><span style="color:#a6e22e">setConnectTimeout</span><span style="color:#f92672">(</span>5000<span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">setConnectionRequestTimeout</span><span style="color:#f92672">(</span>3000<span style="color:#f92672">).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">return</span> HttpClientBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setDefaultRequestConfig</span><span style="color:#f92672">(</span>requestConfig<span style="color:#f92672">).</span><span style="color:#a6e22e">setConnectionManager</span><span style="color:#f92672">(</span>connectionManager<span style="color:#f92672">)</span> <span style="color:#f92672">.</span><span style="color:#a6e22e">setRedirectStrategy</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> LaxRedirectStrategy<span style="color:#f92672">())</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+
+
+
+
+<span style="color:#f92672">}</span>
+
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.dxy.domain<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> lombok.Data<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.io.Serializable<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author 侯叶飞
+</span><span style="color:#75715e"> * @Date 2020-11-02:11:48
+</span><span style="color:#75715e"> * @Description 城市数据实体
+</span><span style="color:#75715e"> */</span>
+
+<span style="color:#a6e22e">@Data</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">City</span> <span style="color:#66d9ef">implements</span> Serializable <span style="color:#f92672">{</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 当前地区所属省份
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String province<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 城市名称
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String name<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 城市编号
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String citycode<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 地图名称
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String mapName<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 现存确诊
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String econNum<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 新增确诊
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String conadd<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 死亡
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String deathNum<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 治愈
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String cureNum<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 无新增天数
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String zerodays<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 现存无症状
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String asymptomNum<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 境外输入
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String jwsr<span style="color:#f92672">;</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 疑似
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> String susNum<span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">toString</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span>
+                province <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> name <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> citycode <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> mapName <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> econNum <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> conadd <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> deathNum <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> cureNum <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> zerodays <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> asymptomNum <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> jwsr <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;\t&#34;</span> <span style="color:#f92672">+</span> susNum<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+</code></pre></div><h2 id="爬虫核心代码">爬虫核心代码</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.epidemicsituationreptiles.service<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> com.alibaba.fastjson.JSON<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.alibaba.fastjson.JSONObject<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.offcn.epidemicsituationreptiles.domain.City<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> lombok.extern.slf4j.Slf4j<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.apache.commons.io.FileUtils<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.beans.factory.annotation.Autowired<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.stereotype.Service<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.web.client.RestTemplate<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.io.File<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.List<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author 侯叶飞
+</span><span style="color:#75715e"> * @Date 2020-11-17:16:47
+</span><span style="color:#75715e"> * @Description 爬取数据的核心接口实现
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@Service</span>
+<span style="color:#a6e22e">@Slf4j</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CityServiceImpl</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Autowired</span>
+    <span style="color:#66d9ef">private</span> RestTemplate restTemplate<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">getData2File</span><span style="color:#f92672">(</span>String url<span style="color:#f92672">,</span>String fileName<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            parseG2File<span style="color:#f92672">(</span>restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">getForObject</span><span style="color:#f92672">(</span>urlConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">getHurl</span><span style="color:#f92672">(),</span> String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">),</span>fileName<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">parseG2File</span><span style="color:#f92672">(</span>String template<span style="color:#f92672">,</span>String fileName<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+
+        List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> list <span style="color:#f92672">=</span> JSON<span style="color:#f92672">.</span><span style="color:#a6e22e">parseArray</span><span style="color:#f92672">(</span>JSON<span style="color:#f92672">.</span><span style="color:#a6e22e">parseObject</span><span style="color:#f92672">(</span>template<span style="color:#f92672">).</span><span style="color:#a6e22e">getString</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;data&#34;</span><span style="color:#f92672">),</span> String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>String line <span style="color:#f92672">:</span> list<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+            JSONObject parse <span style="color:#f92672">=</span> JSON<span style="color:#f92672">.</span><span style="color:#a6e22e">parseObject</span><span style="color:#f92672">(</span>line<span style="color:#f92672">);</span>
+            <span style="color:#75715e">//封装城市对象
+</span><span style="color:#75715e"></span>            City city <span style="color:#f92672">=</span> JSON<span style="color:#f92672">.</span><span style="color:#a6e22e">parseObject</span><span style="color:#f92672">(</span>parse<span style="color:#f92672">.</span><span style="color:#a6e22e">getString</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;trend&#34;</span><span style="color:#f92672">),</span> City<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+            city<span style="color:#f92672">.</span><span style="color:#a6e22e">setName</span><span style="color:#f92672">(</span>parse<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">());</span>
+            String json <span style="color:#f92672">=</span> JSON<span style="color:#f92672">.</span><span style="color:#a6e22e">toJSONString</span><span style="color:#f92672">(</span>city<span style="color:#f92672">)+</span><span style="color:#e6db74">&#34;\n&#34;</span><span style="color:#f92672">;</span>
+            log<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;{}&#34;</span><span style="color:#f92672">,</span> json<span style="color:#f92672">);</span>
+            FileUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">writeStringToFile</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> File<span style="color:#f92672">(</span>fileName<span style="color:#f92672">),</span>json<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;utf-8&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+</code></pre></div><h2 id="测试运行">测试运行</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.offcn.epidemicsituationreptiles<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> com.offcn.epidemicsituationreptiles.config.UrlConfig<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.offcn.epidemicsituationreptiles.service.CityServiceImpl<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.junit.jupiter.api.Test<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.beans.factory.annotation.Autowired<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.boot.test.context.SpringBootTest<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+
+<span style="color:#a6e22e">@SpringBootTest</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WebApplicationTests</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@Autowired</span>
+
+    <span style="color:#66d9ef">private</span> CityServiceImpl cityService<span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Autowired</span>
+    <span style="color:#66d9ef">private</span> UrlConfig urlConfig<span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Test</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">getDataTest</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+
+        cityService<span style="color:#f92672">.</span><span style="color:#a6e22e">getData2File</span><span style="color:#f92672">(</span>urlConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">getHurl</span><span style="color:#f92672">());</span>
+
+
+    <span style="color:#f92672">}</span>
+
+
+<span style="color:#f92672">}</span>
+
+</code></pre></div><h1 id="作业">作业</h1>
+<ul>
+<li>完成疫情数据爬取</li>
+</ul>
+
+      </article>
+    </section>
+
+    
+
+    
+
+    
+  </div>
+</div>
+
+
+            <footer class="ui basic center aligned segment" style="background-color: transparent;">
+              
+              <p>© 2021 My New Hugo Site</p>
+              
+
+              <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+
+              
+            </footer>
+          </div>
+        </section>
+        <section class="back">
+          <div class="dream-max-width">
+            <header class="ui basic very padded segment dream-header">
+  
+
+  <div class="content">
+    <h1 class="ui medium header">Set headerTitle in the config to display<span class="sub header"></span>
+    </h1>
+
+    <article class="ui horizontal list">
+      
+      <a class="item" href="/categories">
+        <i class="th list icon" title="All Categories"></i>
+      </a>
+      <a class="item" href="/tags">
+        <i class="tags icon" title="All Tags"></i>
+      </a>
+    </article>
+
+    
+  </div>
+</header>
+
+
+<div class="ui relaxed grid dream-grid dream-back">
+  
+  
+  
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    <article class="ui segment">
+      <div class="ui medium header">Social Links</div>
+      <nav class="ui secondary menu dream-menu dream-socials">
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+    </article>
+  </div>
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    
+  </div>
+
+  
+  
+  
+</div>
+
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+    
+
+    <script>
+  window.defaultDark =  null 
+  window.backgroundDark =  null 
+  window.backgroundImageDark =  null 
+  window.darkNav =  null 
+  window.maxTags =  null 
+  window.hasTwitterEmbed =  null 
+
+  if (window.hasTwitterEmbed) {
+    
+    window.twttr = (function (d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {}
+      if (d.getElementById(id)) return t
+      js = d.createElement(s)
+      js.id = id
+      js.src = 'https://platform.twitter.com/widgets.js'
+      fjs.parentNode.insertBefore(js, fjs)
+
+      t._e = []
+      t.ready = function (f) {
+        t._e.push(f)
+      }
+
+      return t
+    })(document, 'script', 'twitter-wjs')
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/js/jquery.overlayScrollbars.min.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/theme.js"></script>
+
+    
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js"></script>
+<script src="/js/post.js" defer></script>
+
+
+    
+
+    
+  </body>
+</html>

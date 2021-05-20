@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>My New Hugo Site</title>
+    <link>https://heartstringmx.github.mx/</link>
+    <description>Recent content on My New Hugo Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 21 May 2021 00:02:17 +0800</lastBuildDate><atom:link href="https://heartstringmx.github.mx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RestTemplate概述</title>
+      <link>https://heartstringmx.github.mx/post/blog/</link>
+      <pubDate>Fri, 21 May 2021 00:02:17 +0800</pubDate>
+      
+      <guid>https://heartstringmx.github.mx/post/blog/</guid>
+      <description>RestTemplate概述 Spring 官网对它的介绍如下
+ The original Spring REST client with a synchronous, template method API.
+ RestTemplate 是一个同步的 Rest API 客户端。下面我们就来介绍下 RestTemplate 的常用功能。
+RestTemplate中的方法大致可以分为三组
+ getForObject &amp;mdash; optionsForAllow 分为一组，这类方法是常规的 Rest API（GET、POST、DELETE 等）方法调用； exchange：接收一个 RequestEntity 参数，可以自己设置 HTTP method，URL，headers 和 body，返回 ResponseEntity； execute：通过 callback 接口，可以对请求和返回做更加全面的自定义控制。   一般情况下，我们使用第一组和第二组方法就够了。
+ 普通接口调用 RestTemplate 会根据 params 的具体类型，调用合适的 HttpMessageConvert 将请求参数写到请求体 body 中，并在请求头中添加合适的 content-type 也会根据 responseType 的类型（本列子中是 JSONObject），设置 head 中的 accept 字段，当响应返回的时候再调用合适的 HttpMessageConvert 进行响应转换
+// 通过 GET 方式调用，返回一个 String 值，还可以给 URL 变量设置值（也可通过 uriTemplateHandler 这个属性自定义） Map&amp;lt;String, String&amp;gt; vars = Collections.</description>
+    </item>
+    
+  </channel>
+</rss>
